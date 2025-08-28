@@ -1,0 +1,16 @@
+# 这个文件确保Workspace目录被包含在版本控制中
+# 开发者应该在这个目录下创建他们的游戏项目
+
+## 使用说明
+
+1. 复制 Templates/BasicGame 到这个目录
+2. 重命名为您的游戏项目名称
+3. 开始开发您的游戏
+
+## 示例
+
+```bash
+cp -r ../Templates/BasicGame ./MyAwesomeGame
+cd MyAwesomeGame
+# 开始开发...
+```

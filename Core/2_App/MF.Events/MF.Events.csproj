@@ -1,0 +1,22 @@
+<Project Sdk="Godot.NET.Sdk/4.4.1">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Autofac" Version="8.3.0" />
+      <PackageReference Include="GodotSharp" Version="4.4.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\1_2_Backend\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />
+      <ProjectReference Include="..\..\0_Base\MF.Commons\MF.Commons.csproj" />
+      <ProjectReference Include="..\..\1_2_Backend\MF.Repositories.Abstractions\MF.Repositories.Abstractions.csproj" />
+      <ProjectReference Include="..\..\1_2_Backend\MF.Repositories\MF.Repositories.csproj" />
+      <ProjectReference Include="..\..\1_2_Backend\MF.Data\MF.Data.csproj" />
+    </ItemGroup>
+
+</Project>

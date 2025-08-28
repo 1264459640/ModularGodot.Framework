@@ -1,0 +1,40 @@
+<Project Sdk="Godot.NET.Sdk/4.3.0">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors>CS1591</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AssemblyTitle>ModularGodot Infrastructure</AssemblyTitle>
+    <AssemblyDescription>基础设施层具体实现</AssemblyDescription>
+    <AssemblyCompany>ModularGodot</AssemblyCompany>
+    <AssemblyProduct>ModularGodot Framework</AssemblyProduct>
+    <AssemblyCopyright>Copyright © ModularGodot 2024</AssemblyCopyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\0_Base\MF.Commons\MF.Commons.csproj" />
+    <ProjectReference Include="..\..\0_Base\MF.Contexts\MF.Contexts.csproj" />
+    <ProjectReference Include="..\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
+    <PackageReference Include="R3" Version="1.2.17" />
+
+  </ItemGroup>
+
+</Project>
