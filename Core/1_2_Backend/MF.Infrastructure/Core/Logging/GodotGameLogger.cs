@@ -2,7 +2,7 @@ using Godot;
 using MF.Infrastructure.Abstractions.Core.Logging;
 using MF.Infrastructure.Bases;
 
-namespace MF.Infrastructure.Logging;
+namespace MF.Infrastructure.Core.Logging;
 
 /// <summary>
 /// Godot游戏日志实现
@@ -19,15 +19,10 @@ public class GodotGameLogger : BaseInfrastructure, IGameLogger
         { "Critical", Colors.DarkRed }
     };
     
-    private readonly string _categoryName;
     private Dictionary<string, Color> _logColors = new(DefaultLogColors);
     private readonly object _lock = new();
     
-    public GodotGameLogger(string categoryName)
-    {
-        _categoryName = categoryName;
-    }
-    
+
     public void LogDebug(string message, params object[] args)
     {
         Log("Debug", message, args);
@@ -77,7 +72,7 @@ public class GodotGameLogger : BaseInfrastructure, IGameLogger
         {
             var formattedMessage = args.Length > 0 ? string.Format(message, args) : message;
             var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff");
-            var logMessage = $"[{timestamp}] [{level}] [{_categoryName}] {formattedMessage}";
+            var logMessage = $"[{timestamp}] [{level}] {formattedMessage}";
             
             // 控制台输出
             if (_logColors.TryGetValue(level, out var color))
@@ -106,13 +101,3 @@ public class GodotGameLogger : BaseInfrastructure, IGameLogger
     }
 }
 
-/// <summary>
-/// 泛型游戏日志实现
-/// </summary>
-/// <typeparam name="T">日志类别类型</typeparam>
-public class GodotGameLogger<T> : GodotGameLogger, IGameLogger<T>
-{
-    public GodotGameLogger() : base(typeof(T).Name)
-    {
-    }
-}

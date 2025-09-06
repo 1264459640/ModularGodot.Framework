@@ -11,11 +11,6 @@ public class SingleModule : Module
     {
         try
         {
-            // 注册 IMemoryCache
-            builder.RegisterType<Microsoft.Extensions.Caching.Memory.MemoryCache>()
-                .As<Microsoft.Extensions.Caching.Memory.IMemoryCache>()
-                .SingleInstance();
-
             // 只加载实现程序集
             var assemblyNames = new[]
             {
