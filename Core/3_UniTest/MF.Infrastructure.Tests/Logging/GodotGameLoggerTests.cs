@@ -408,7 +408,6 @@ public class GodotGameLoggerTests : IDisposable
     public void GenericLogger_ShouldImplementIGameLoggerT()
     {
         // Assert
-        Assert.IsAssignableFrom<IGameLogger<TestClass>>(_genericLogger);
         Assert.IsAssignableFrom<IGameLogger>(_genericLogger);
     }
 
@@ -729,7 +728,7 @@ public class GodotGameLoggerTests : IDisposable
     /// 测试用的泛型 GodotGameLogger 实现
     /// </summary>
     /// <typeparam name="T">日志类别类型</typeparam>
-    public class TestGodotGameLogger<T> : TestGodotGameLogger, IGameLogger<T>
+    public class TestGodotGameLogger<T> : TestGodotGameLogger
     {
         public TestGodotGameLogger() : base(typeof(T).Name)
         {

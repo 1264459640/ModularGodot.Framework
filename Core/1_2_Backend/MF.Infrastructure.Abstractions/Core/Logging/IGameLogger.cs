@@ -57,11 +57,3 @@ public interface IGameLogger
     void LogCritical(Exception exception, string message, params object[] args);
     
 }
-
-/// <summary>
-/// 泛型游戏日志接口
-/// </summary>
-/// <typeparam name="T">日志类别类型</typeparam>
-public interface IGameLogger<T> : IGameLogger
-{
-}

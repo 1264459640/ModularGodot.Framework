@@ -2,6 +2,9 @@ using System.Reflection;
 using Autofac;
 using MF.Contexts.Attributes;
 using Module = Autofac.Module;
+using MF.Data.Transient.Infrastructure.Monitoring; // ResourceSystemConfig
+using Microsoft.Extensions.Caching.Memory; // IMemoryCache
+using MF.Infrastructure.Abstractions.Core.Logging; // IGameLogger
 
 namespace MF.Contexts;
 
@@ -11,6 +14,16 @@ public class SingleModule : Module
     {
         try
         {
+            // 显式注册资源系统配置（供 ResourceManager 等使用）
+            builder.RegisterType<ResourceSystemConfig>()
+                .AsSelf()
+                .SingleInstance();
+
+            // 显式注册 IMemoryCache（MemoryCacheService 依赖）
+            builder.RegisterInstance(new MemoryCache(new MemoryCacheOptions()))
+                .As<IMemoryCache>()
+                .SingleInstance();
+
             // 只加载实现程序集
             var assemblyNames = new[]
             {
@@ -47,7 +60,17 @@ public class SingleModule : Module
         {
             var types = assembly.GetTypes()
                 .Where(t => t.IsClass && !t.IsAbstract)
-                .Where(t => !t.IsDefined(typeof(SkipRegistrationAttribute), false));
+                .Where(t => !t.IsDefined(typeof(SkipRegistrationAttribute), false))
+                // 过滤开放泛型/仍包含未闭合类型参数的类型
+                .Where(t => !t.IsGenericTypeDefinition && !t.ContainsGenericParameters)
+                // 过滤编译器生成的类型（闭包类、状态机、匿名类型等）
+                .Where(t =>
+                {
+                    var isCompilerGenerated = t.IsDefined(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), false);
+                    var name = t.Name;
+                    var looksCompilerGenerated = name.StartsWith("<") || name.Contains("DisplayClass") || name.Contains("d__") || name.Contains("AnonymousType");
+                    return !isCompilerGenerated && !looksCompilerGenerated;
+                });
             
             foreach (var type in types)
             {

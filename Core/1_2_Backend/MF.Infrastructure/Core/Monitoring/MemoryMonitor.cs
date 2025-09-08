@@ -12,7 +12,7 @@ namespace MF.Infrastructure.Core.Monitoring;
 /// </summary>
 public class MemoryMonitor : BaseInfrastructure, IMemoryMonitor
 {
-    private readonly IGameLogger<MemoryMonitor> _logger;
+    private readonly IGameLogger _logger;
     private readonly Timer _monitorTimer;
     private long _lastMemoryUsage;
     
@@ -34,7 +34,7 @@ public class MemoryMonitor : BaseInfrastructure, IMemoryMonitor
     /// </summary>
     public double MemoryPressureThreshold { get; set; } = 0.8; // 80%
     
-    public MemoryMonitor(IGameLogger<MemoryMonitor> logger)
+    public MemoryMonitor(IGameLogger logger)
     {
         _logger = logger;
         _monitorTimer = new Timer(CheckMemoryUsage, null, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);

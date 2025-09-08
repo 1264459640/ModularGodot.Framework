@@ -14,7 +14,7 @@ namespace MF.Infrastructure.Core.Caching;
 public class MemoryCacheService : BaseInfrastructure, ICacheService
 {
     private readonly IMemoryCache _memoryCache;
-    private readonly IGameLogger<MemoryCacheService> _logger;
+    private readonly IGameLogger _logger;
     private readonly CacheConfig _config;
     private readonly ConcurrentDictionary<string, CacheEntry> _entries = new();
     
@@ -28,7 +28,7 @@ public class MemoryCacheService : BaseInfrastructure, ICacheService
     
     public MemoryCacheService(
         IMemoryCache memoryCache,
-        IGameLogger<MemoryCacheService> logger,
+        IGameLogger logger,
         CacheConfig? config = null)
     {
         _memoryCache = memoryCache;

@@ -11,13 +11,13 @@ namespace MF.Infrastructure.Core.Monitoring;
 /// </summary>
 public class PerformanceMonitor : BaseInfrastructure, IPerformanceMonitor
 {
-    private readonly IGameLogger<PerformanceMonitor> _logger;
+    private readonly IGameLogger _logger;
     private readonly ConcurrentDictionary<string, MetricData> _metrics = new();
     private readonly ConcurrentDictionary<string, long> _counters = new();
     private readonly ConcurrentDictionary<string, TimerData> _timers = new();
     private readonly ConcurrentDictionary<string, ActiveTimer> _activeTimers = new();
     
-    public PerformanceMonitor(IGameLogger<PerformanceMonitor> logger)
+    public PerformanceMonitor(IGameLogger logger)
     {
         _logger = logger;
         
