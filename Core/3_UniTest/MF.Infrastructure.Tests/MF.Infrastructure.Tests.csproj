@@ -25,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\1_2_Backend\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\..\0_Base\MF.Commons\MF.Commons.csproj" />
+    <ProjectReference Include="..\..\1_2_Backend\MF.Infrastructure\MF.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

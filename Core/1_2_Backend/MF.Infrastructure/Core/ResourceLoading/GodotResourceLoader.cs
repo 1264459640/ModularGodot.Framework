@@ -5,7 +5,7 @@ using MF.Services.Abstractions.Core.ResourceLoading;
 using MF.Services.Abstractions.Core.ResourceManagement;
 using MF.Services.Bases;
 
-namespace MF.Services.Core.ResourceLoading;
+namespace MF.Infrastructure.Core.ResourceLoading;
 
 /// <summary>
 /// Godot 资源加载器实现 - 集成资源缓存服务

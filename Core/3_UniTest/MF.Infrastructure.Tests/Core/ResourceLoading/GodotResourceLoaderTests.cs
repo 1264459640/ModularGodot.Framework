@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Xunit;
 using Moq;
 using FluentAssertions;
-using MF.Services.Abstractions.Core.ResourceLoading;
-using MF.Services.Abstractions.Core.ResourceManagement;
+using MF.Infrastructure.Abstractions.Core.ResourceLoading;
+using MF.Infrastructure.Abstractions.Core.ResourceManagement;
 using MF.Commons.Core.Enums.Infrastructure;
 
-namespace MF.Services.Tests.Core.ResourceLoading;
+namespace MF.Infrastructure.Tests.Core.ResourceLoading;
 
 /// <summary>
 /// GodotResourceLoader 单元测试

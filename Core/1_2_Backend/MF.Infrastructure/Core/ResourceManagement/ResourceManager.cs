@@ -10,7 +10,7 @@ using System.Diagnostics;
 using MF.Commons.Core.Enums.Infrastructure;
 using MemoryPressureLevel = MF.Events.ResourceManagement.MemoryPressureLevel;
 
-namespace MF.Services.Core.ResourceManagement;
+namespace MF.Infrastructure.Core.ResourceManagement;
 
 /// <summary>
 /// 资源管理器 - 系统核心协调组件
