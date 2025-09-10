@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Godot;
 using MF.Commons.Core.Enums.Infrastructure;
-using MF.Services.Abstractions.Core.ResourceLoading;
-using MF.Services.Abstractions.Core.ResourceManagement;
+using MF.Infrastructure.Abstractions.Core.ResourceLoading;
+using MF.Infrastructure.Abstractions.Core.ResourceManagement;
 using MF.Services.Bases;
 
 namespace MF.Infrastructure.Core.ResourceLoading;

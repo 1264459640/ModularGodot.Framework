@@ -7,7 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\1_2_Backend\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\..\1_2_Backend\MF.Repositories.Abstractions\MF.Repositories.Abstractions.csproj" />
-    <ProjectReference Include="..\MF.Commands\MF.Commands.csproj" />
+    <ProjectReference Include="..\MF.CQRS\MF.CQRS.csproj" />
     <ProjectReference Include="..\..\1_2_Backend\MF.Data\MF.Data.csproj" />
     <ProjectReference Include="..\MF.Events\MF.Events.csproj" />
     <ProjectReference Include="..\..\1_1_Fronted\MF.Nodes.Abstractions\MF.Nodes.Abstractions.csproj" />

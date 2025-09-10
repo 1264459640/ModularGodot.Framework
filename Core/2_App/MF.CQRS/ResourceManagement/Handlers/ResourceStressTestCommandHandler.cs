@@ -3,9 +3,9 @@ using MF.Commands;
 using Godot;
 using System.Diagnostics;
 using System.Collections.Concurrent;
-using MF.Services.Abstractions.Core.ResourceManagement;
+using MF.Infrastructure.Abstractions.Core.ResourceManagement;
 
-namespace MF.CommandHandlers;
+namespace MF.Commands;
 
 /// <summary>
 /// 资源压力测试命令处理器

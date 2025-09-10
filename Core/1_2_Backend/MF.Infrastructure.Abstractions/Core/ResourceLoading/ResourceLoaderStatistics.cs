@@ -1,4 +1,4 @@
-namespace MF.Services.Abstractions.Core.ResourceLoading;
+namespace MF.Infrastructure.Abstractions.Core.ResourceLoading;
 
 /// <summary>
 /// 资源加载器统计信息

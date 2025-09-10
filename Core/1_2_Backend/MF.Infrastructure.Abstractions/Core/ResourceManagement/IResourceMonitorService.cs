@@ -1,6 +1,6 @@
 using MF.Data.Transient.Infrastructure.Monitoring;
 
-namespace MF.Services.Abstractions.Core.ResourceManagement;
+namespace MF.Infrastructure.Abstractions.Core.ResourceManagement;
 
 /// <summary>
 /// 资源监控查询服务接口 - Standard级别

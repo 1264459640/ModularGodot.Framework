@@ -3,7 +3,7 @@ using MF.Commands;
 using Godot;
 using System.Diagnostics;
 
-namespace MF.CommandHandlers;
+namespace MF.Commands;
 
 /// <summary>
 /// 资源加载命令处理器

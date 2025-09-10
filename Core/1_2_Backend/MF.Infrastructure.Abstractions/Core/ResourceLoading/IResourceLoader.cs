@@ -1,6 +1,8 @@
+
+
 using MF.Commons.Core.Enums.Infrastructure;
 
-namespace MF.Services.Abstractions.Core.ResourceLoading;
+namespace MF.Infrastructure.Abstractions.Core.ResourceLoading;
 
 /// <summary>
 /// 资源加载器接口 - Standard级别

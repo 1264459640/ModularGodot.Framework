@@ -8,13 +8,16 @@
 
     <ItemGroup>
         <PackageReference Include="GDTask" Version="1.4.1" />
-        <PackageReference Include="GodotSharp" Version="4.4.1" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\0_Base\MF.Commons\MF.Commons.csproj" />
         <ProjectReference Include="..\..\1_2_Backend\MF.Data\MF.Data.csproj" />
         <ProjectReference Include="..\..\1_1_Fronted\MF.Nodes.Abstractions\MF.Nodes.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Core\" />
     </ItemGroup>
 
 </Project>

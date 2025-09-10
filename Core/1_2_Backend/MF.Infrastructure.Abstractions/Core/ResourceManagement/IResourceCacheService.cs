@@ -1,6 +1,6 @@
 using MF.Commons.Core.Enums.Infrastructure;
 
-namespace MF.Services.Abstractions.Core.ResourceManagement;
+namespace MF.Infrastructure.Abstractions.Core.ResourceManagement;
 
 /// <summary>
 /// 资源缓存服务接口 - Standard级别

@@ -1,13 +1,13 @@
 using MF.Infrastructure.Abstractions.Core.Caching;
 using MF.Infrastructure.Abstractions.Core.EventBus;
 using MF.Infrastructure.Abstractions.Core.Monitoring;
-using MF.Services.Abstractions.Core.ResourceManagement;
 using MF.Data.Transient.Infrastructure.Monitoring;
 using MF.Events.ResourceManagement;
 using MF.Services.Bases;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using MF.Commons.Core.Enums.Infrastructure;
+using MF.Infrastructure.Abstractions.Core.ResourceManagement;
 using MemoryPressureLevel = MF.Events.ResourceManagement.MemoryPressureLevel;
 
 namespace MF.Infrastructure.Core.ResourceManagement;
