@@ -10,7 +10,6 @@
     <PackageReference Include="R3" Version="1.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\1_1_Fronted\MF.Nodes.Abstractions\MF.Nodes.Abstractions.csproj" />
     <ProjectReference Include="..\MF.Commons\MF.Commons.csproj" />
     <ProjectReference Include="..\MF.Data\MF.Data.csproj" />
     <ProjectReference Include="..\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />

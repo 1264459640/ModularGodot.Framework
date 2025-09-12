@@ -1,34 +1,38 @@
 using MediatR;
-using MF.Commands;
+using MF.CQRS.ResourceManagement.StressTesting;
+using MF.CQRS.ResourceManagement.LoadResource;
 using Godot;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using MF.Infrastructure.Abstractions.Core.ResourceManagement;
 
-namespace MF.Commands;
+namespace MF.CQRS.ResourceManagement.StressTesting;
 
 /// <summary>
-/// 资源压力测试命令处理器
+/// 运行资源压力测试命令处理器
 /// </summary>
-public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTestCommand, ResourceStressTestResult>
+public class RunResourceStressTestCommandHandler : IRequestHandler<RunResourceStressTestCommand, RunResourceStressTestResult>
 {
+    private readonly IMediator _mediator;
     private readonly IResourceCacheService? _resourceCacheService;
     private readonly IResourceMonitorService? _resourceMonitorService;
     private readonly List<string> _testResources = new();
     
-    public ResourceStressTestCommandHandler(
+    public RunResourceStressTestCommandHandler(
+        IMediator mediator,
         IResourceCacheService? resourceCacheService = null,
         IResourceMonitorService? resourceMonitorService = null)
     {
+        _mediator = mediator;
         _resourceCacheService = resourceCacheService;
         _resourceMonitorService = resourceMonitorService;
         InitializeTestResources();
     }
     
     /// <summary>
-    /// 处理压力测试命令
+    /// 处理运行资源压力测试命令
     /// </summary>
-    public async Task<ResourceStressTestResult> Handle(ResourceStressTestCommand request, CancellationToken cancellationToken)
+    public async Task<RunResourceStressTestResult> Handle(RunResourceStressTestCommand request, CancellationToken cancellationToken)
     {
         var stopwatch = Stopwatch.StartNew();
         var errors = new List<string>();
@@ -39,12 +43,12 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
             
             var result = request.TestType switch
             {
-                StressTestType.MemoryPressure => await ExecuteMemoryPressureTest(request, cancellationToken),
-                StressTestType.CacheCleanup => await ExecuteCacheCleanupTest(request, cancellationToken),
-                StressTestType.ConcurrentLoad => await ExecuteConcurrentLoadTest(request, cancellationToken),
-                StressTestType.MemoryLeak => await ExecuteMemoryLeakTest(request, cancellationToken),
-                StressTestType.PerformanceBenchmark => await ExecutePerformanceBenchmarkTest(request, cancellationToken),
-                _ => ResourceStressTestResult.Failure($"未知的测试类型: {request.TestType}", request.CommandId, request.TestType)
+                ResourceStressTestType.MemoryPressure => await ExecuteMemoryPressureTest(request, cancellationToken),
+                ResourceStressTestType.CacheCleanup => await ExecuteCacheCleanupTest(request, cancellationToken),
+                ResourceStressTestType.ConcurrentLoad => await ExecuteConcurrentLoadTest(request, cancellationToken),
+                ResourceStressTestType.MemoryLeak => await ExecuteMemoryLeakTest(request, cancellationToken),
+                ResourceStressTestType.PerformanceBenchmark => await ExecutePerformanceBenchmarkTest(request, cancellationToken),
+                _ => RunResourceStressTestResult.Failure($"未知的测试类型: {request.TestType}", request.CommandId, request.TestType)
             };
             
             stopwatch.Stop();
@@ -58,19 +62,19 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
             errors.Add($"测试执行异常: {ex.Message}");
             GD.PrintErr($"[StressTest] 压力测试异常: {ex.Message}");
             
-            return ResourceStressTestResult.Failure(
-                $"压力测试失败: {ex.Message}",
-                request.CommandId,
-                request.TestType,
-                errors
-            );
+            return RunResourceStressTestResult.Failure(
+                 $"压力测试失败: {ex.Message}",
+                 request.CommandId,
+                 request.TestType,
+                 errors
+             );
         }
     }
     
     /// <summary>
     /// 执行内存压力测试
     /// </summary>
-    private async Task<ResourceStressTestResult> ExecuteMemoryPressureTest(ResourceStressTestCommand request, CancellationToken cancellationToken)
+    private async Task<RunResourceStressTestResult> ExecuteMemoryPressureTest(RunResourceStressTestCommand request, CancellationToken cancellationToken)
     {
         var initialMemory = GC.GetTotalMemory(false);
         var peakMemory = initialMemory;
@@ -94,24 +98,36 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
                 var resourcePath = _testResources[resourceIndex % _testResources.Count];
                 var cacheKey = $"stress_test_{totalRequests}_{resourcePath}";
                 
-                // 加载大量资源到缓存
-                if (_resourceCacheService != null)
+                // 使用CQRS指令加载资源
+                var loadCommand = new LoadResourceRequest
                 {
-                    var resource = GD.Load(resourcePath);
-                    if (resource != null)
+                    ResourcePath = resourcePath,
+                    ResourceType = GetResourceTypeFromPath(resourcePath),
+                    IsAsync = true,
+                    RequestId = Guid.NewGuid().ToString()
+                };
+                
+                var loadResult = await _mediator.Send(loadCommand, cancellationToken);
+                
+                if (loadResult.IsSuccess)
+                {
+                    successfulRequests++;
+                    
+                    // 如果有缓存服务，将结果存入缓存
+                    if (_resourceCacheService != null)
                     {
-                        await _resourceCacheService.SetAsync(cacheKey, resource, cancellationToken: cancellationToken);
-                        successfulRequests++;
+                        // 注意：这里我们不能直接缓存LoadResult，需要重新加载实际资源
+                        // 在实际应用中，LoadResourceRequest应该返回实际的资源对象
+                        var resource = GD.Load(resourcePath);
+                        if (resource != null)
+                        {
+                            await _resourceCacheService.SetAsync(cacheKey, resource, cancellationToken: cancellationToken);
+                        }
                     }
                 }
                 else
                 {
-                    // 直接加载资源（模拟内存占用）
-                    var resource = GD.Load(resourcePath);
-                    if (resource != null)
-                    {
-                        successfulRequests++;
-                    }
+                    GD.PrintErr($"[StressTest] 资源加载失败: {loadResult.Message}");
                 }
                 
                 resourceIndex++;
@@ -178,7 +194,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
             ["memory_released_mb"] = Math.Max(0, peakMemory - finalMemory) / (1024.0 * 1024.0)
         };
         
-        return ResourceStressTestResult.Success(
+        return RunResourceStressTestResult.Success(
             $"内存压力测试完成，处理 {totalRequests} 个请求，内存释放 {FormatBytes(Math.Max(0, peakMemory - finalMemory))}",
             request.CommandId,
             request.TestType,
@@ -198,11 +214,11 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
     /// <summary>
     /// 执行缓存清理测试
     /// </summary>
-    private async Task<ResourceStressTestResult> ExecuteCacheCleanupTest(ResourceStressTestCommand request, CancellationToken cancellationToken)
+    private async Task<RunResourceStressTestResult> ExecuteCacheCleanupTest(RunResourceStressTestCommand request, CancellationToken cancellationToken)
     {
         if (_resourceCacheService == null)
         {
-            return ResourceStressTestResult.Failure("ResourceCacheService 不可用", request.CommandId, request.TestType);
+            return RunResourceStressTestResult.Failure("ResourceCacheService 不可用", request.CommandId, request.TestType);
         }
         
         var initialMemory = GC.GetTotalMemory(false);
@@ -221,11 +237,26 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
             
             try
             {
-                var resource = GD.Load(resourcePath);
-                if (resource != null)
+                // 使用CQRS指令加载资源
+                var loadCommand = new LoadResourceRequest
                 {
-                    await _resourceCacheService.SetAsync(cacheKey, resource, cancellationToken: cancellationToken);
-                    successfulRequests++;
+                    ResourcePath = resourcePath,
+                    ResourceType = GetResourceTypeFromPath(resourcePath),
+                    IsAsync = true,
+                    RequestId = Guid.NewGuid().ToString()
+                };
+                
+                var loadResult = await _mediator.Send(loadCommand, cancellationToken);
+                
+                if (loadResult.IsSuccess)
+                {
+                    // 重新加载实际资源对象用于缓存
+                    var resource = GD.Load(resourcePath);
+                    if (resource != null)
+                    {
+                        await _resourceCacheService.SetAsync(cacheKey, resource, cancellationToken: cancellationToken);
+                        successfulRequests++;
+                    }
                 }
                 totalRequests++;
             }
@@ -262,7 +293,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
         GD.Print($"  - 清理后内存: {FormatBytes(finalMemory)}");
         GD.Print($"  - 内存释放: {FormatBytes(Math.Max(0, afterFillMemory - finalMemory))}");
         
-        return ResourceStressTestResult.Success(
+        return RunResourceStressTestResult.Success(
             $"缓存清理测试完成，内存释放 {FormatBytes(Math.Max(0, afterFillMemory - finalMemory))}",
             request.CommandId,
             request.TestType,
@@ -281,7 +312,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
     /// <summary>
     /// 执行并发加载测试
     /// </summary>
-    private async Task<ResourceStressTestResult> ExecuteConcurrentLoadTest(ResourceStressTestCommand request, CancellationToken cancellationToken)
+    private async Task<RunResourceStressTestResult> ExecuteConcurrentLoadTest(RunResourceStressTestCommand request, CancellationToken cancellationToken)
     {
         var initialMemory = GC.GetTotalMemory(false);
         var totalRequests = 0L;
@@ -306,9 +337,19 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
                     try
                     {
                         var resourcePath = _testResources[(int)(localRequests % _testResources.Count)];
-                        var resource = GD.Load(resourcePath);
                         
-                        if (resource != null)
+                        // 使用CQRS指令加载资源
+                        var loadCommand = new LoadResourceRequest
+                        {
+                            ResourcePath = resourcePath,
+                            ResourceType = GetResourceTypeFromPath(resourcePath),
+                            IsAsync = true,
+                            RequestId = Guid.NewGuid().ToString()
+                        };
+                        
+                        var loadResult = await _mediator.Send(loadCommand, cancellationToken);
+                        
+                        if (loadResult.IsSuccess)
                         {
                             localSuccessful++;
                         }
@@ -347,7 +388,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
         GD.Print($"  - 平均响应时间: {avgResponseTime:F2}ms");
         GD.Print($"  - 内存使用: {FormatBytes(finalMemory)}");
         
-        return ResourceStressTestResult.Success(
+        return RunResourceStressTestResult.Success(
             $"并发加载测试完成，{request.ConcurrentThreads} 个线程处理 {totalRequests} 个请求",
             request.CommandId,
             request.TestType,
@@ -366,7 +407,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
     /// <summary>
     /// 执行内存泄漏测试
     /// </summary>
-    private async Task<ResourceStressTestResult> ExecuteMemoryLeakTest(ResourceStressTestCommand request, CancellationToken cancellationToken)
+    private async Task<RunResourceStressTestResult> ExecuteMemoryLeakTest(RunResourceStressTestCommand request, CancellationToken cancellationToken)
     {
         var memorySnapshots = new List<(DateTime Time, long Memory)>();
         var initialMemory = GC.GetTotalMemory(true); // 强制GC后的内存
@@ -386,13 +427,22 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
                 try
                 {
                     var resourcePath = _testResources[(int)(i % _testResources.Count)];
-                    var resource = GD.Load(resourcePath);
                     
-                    if (resource != null)
+                    // 使用CQRS指令加载资源
+                    var loadCommand = new LoadResourceRequest
+                    {
+                        ResourcePath = resourcePath,
+                        ResourceType = GetResourceTypeFromPath(resourcePath),
+                        IsAsync = true,
+                        RequestId = Guid.NewGuid().ToString()
+                    };
+                    
+                    var loadResult = await _mediator.Send(loadCommand, cancellationToken);
+                    
+                    if (loadResult.IsSuccess)
                     {
                         successfulRequests++;
-                        // 立即释放引用
-                        resource = null;
+                        // 注意：CQRS指令已经处理了资源加载，这里不需要额外的引用管理
                     }
                     
                     totalRequests++;
@@ -445,7 +495,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
             ["memory_snapshots_count"] = memorySnapshots.Count
         };
         
-        return ResourceStressTestResult.Success(
+        return RunResourceStressTestResult.Success(
             $"内存泄漏测试完成，内存增长 {FormatBytes(memoryGrowth)}，{(isMemoryLeak ? "疑似" : "无")}内存泄漏",
             request.CommandId,
             request.TestType,
@@ -465,7 +515,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
     /// <summary>
     /// 执行性能基准测试
     /// </summary>
-    private async Task<ResourceStressTestResult> ExecutePerformanceBenchmarkTest(ResourceStressTestCommand request, CancellationToken cancellationToken)
+    private async Task<RunResourceStressTestResult> ExecutePerformanceBenchmarkTest(RunResourceStressTestCommand request, CancellationToken cancellationToken)
     {
         var initialMemory = GC.GetTotalMemory(false);
         var totalRequests = 0L;
@@ -491,9 +541,19 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
                 try
                 {
                     var resourcePath = _testResources[(int)(totalRequests % _testResources.Count)];
-                    var resource = GD.Load(resourcePath);
                     
-                    if (resource != null)
+                    // 使用CQRS指令加载资源
+                    var loadCommand = new LoadResourceRequest
+                    {
+                        ResourcePath = resourcePath,
+                        ResourceType = GetResourceTypeFromPath(resourcePath),
+                        IsAsync = true,
+                        RequestId = Guid.NewGuid().ToString()
+                    };
+                    
+                    var loadResult = await _mediator.Send(loadCommand, cancellationToken);
+                    
+                    if (loadResult.IsSuccess)
                     {
                         successfulRequests++;
                     }
@@ -561,7 +621,7 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
             ["p99_response_time_ms"] = responseTimes.Count > 0 ? GetPercentile(responseTimes, 0.99) : 0
         };
         
-        return ResourceStressTestResult.Success(
+        return RunResourceStressTestResult.Success(
             $"性能基准测试完成，平均吞吐量 {avgThroughput:F2} 请求/秒，平均响应时间 {avgResponseTime:F2}ms",
             request.CommandId,
             request.TestType,
@@ -672,6 +732,22 @@ public class ResourceStressTestCommandHandler : IRequestHandler<ResourceStressTe
         if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
         if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024.0):F1} MB";
         return $"{bytes / (1024.0 * 1024.0 * 1024.0):F1} GB";
+    }
+    
+    /// <summary>
+    /// 根据文件路径获取资源类型
+    /// </summary>
+    private static ResourceType GetResourceTypeFromPath(string path)
+    {
+        var extension = System.IO.Path.GetExtension(path).ToLower();
+        return extension switch
+        {
+            ".png" or ".jpg" or ".jpeg" or ".svg" or ".webp" => ResourceType.Image,
+            ".ogg" or ".wav" or ".mp3" => ResourceType.Audio,
+            ".tscn" or ".scn" => ResourceType.Scene,
+            ".tres" => ResourceType.Material,
+            _ => ResourceType.Image // 默认为图像类型
+        };
     }
     
     /// <summary>
