@@ -17,13 +17,10 @@
     <ItemGroup>
       <ProjectReference Include="..\..\1_1_Fronted\MF.Nodes.Abstractions\MF.Nodes.Abstractions.csproj" />
       <ProjectReference Include="..\..\1_2_Backend\MF.Repositories\MF.Repositories.csproj" />
-      <ProjectReference Include="..\..\2_App\MF.Services\MF.Services.csproj" />
   
       <ProjectReference Include="..\MF.Apps.Services.Abstractions\MF.Apps.Services.Abstractions.csproj" />
       <ProjectReference Include="..\MF.Apps.Services\MF.Apps.Services.csproj" />
       <ProjectReference Include="..\MF.Commons\MF.Commons.csproj" />
-      <ProjectReference Include="..\MF.Repositories\MF.Repositories.csproj" />
-      <ProjectReference Include="..\MF.Services\MF.Services.csproj" />
      
     </ItemGroup>
 

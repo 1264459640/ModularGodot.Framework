@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\0_Base\MF.Commons\MF.Commons.csproj" />
     <ProjectReference Include="..\..\0_Base\MF.Contexts\MF.Contexts.csproj" />
+    <ProjectReference Include="..\..\2_App\MF.Events\MF.Events.csproj" />
     <ProjectReference Include="..\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />
   </ItemGroup>
 

@@ -1,7 +1,6 @@
 using Autofac;
 using MF.Commons;
 using MF.Repositories.Bases;
-using MF.Services.Bases;
 
 namespace MF.Contexts;
 
@@ -18,9 +17,13 @@ public class Contexts : LazySingleton<Contexts>
     public Contexts()
     {
         var builder = new ContainerBuilder();
+
+        // 注册自动扫描模块
+
         builder.RegisterType<NodeRegister>().SingleInstance();
         builder.RegisterModule<SingleModule>();
         builder.RegisterModule<MediatorModule>();
+        builder.RegisterModule<DependencyInjectionModule>();
 
         // 注册 NodeRegister
         builder.Register(c => new NodeRegister(c)).SingleInstance();

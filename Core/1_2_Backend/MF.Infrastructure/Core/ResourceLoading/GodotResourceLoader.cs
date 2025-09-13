@@ -3,14 +3,14 @@ using Godot;
 using MF.Commons.Core.Enums.Infrastructure;
 using MF.Infrastructure.Abstractions.Core.ResourceLoading;
 using MF.Infrastructure.Abstractions.Core.ResourceManagement;
-using MF.Services.Bases;
+using MF.Infrastructure.Bases;
 
 namespace MF.Infrastructure.Core.ResourceLoading;
 
 /// <summary>
 /// Godot 资源加载器实现 - 集成资源缓存服务
 /// </summary>
-public class GodotResourceLoader : BaseService, IResourceLoader
+public class GodotResourceLoader : BaseInfrastructure, IResourceLoader
 {
     private readonly IResourceCacheService _cacheService;
     private ResourceLoaderStatistics _statistics = new();

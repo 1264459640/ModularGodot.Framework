@@ -6,11 +6,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\0_Base\MF.Commons\MF.Commons.csproj" />
-    <ProjectReference Include="..\MF.Commons\MF.Commons.csproj" />
     <ProjectReference Include="..\..\1_2_Backend\MF.Data\MF.Data.csproj" />
     <ProjectReference Include="..\..\1_2_Backend\MF.Repositories.Abstractions\MF.Repositories.Abstractions.csproj" />
     <ProjectReference Include="..\MF.Services.Abstractions\MF.Services.Abstractions.csproj" />
     <ProjectReference Include="..\..\1_2_Backend\MF.Infrastructure.Abstractions\MF.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\..\0_Base\MF.Contexts\MF.Contexts.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Class1.cs" />

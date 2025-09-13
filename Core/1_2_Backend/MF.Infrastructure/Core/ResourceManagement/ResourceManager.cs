@@ -2,12 +2,12 @@ using MF.Infrastructure.Abstractions.Core.Caching;
 using MF.Infrastructure.Abstractions.Core.EventBus;
 using MF.Infrastructure.Abstractions.Core.Monitoring;
 using MF.Data.Transient.Infrastructure.Monitoring;
-using MF.Events.ResourceManagement;
-using MF.Services.Bases;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using MF.Commons.Core.Enums.Infrastructure;
+using MF.Events.ResourceManagement;
 using MF.Infrastructure.Abstractions.Core.ResourceManagement;
+using MF.Infrastructure.Bases;
 using MemoryPressureLevel = MF.Events.ResourceManagement.MemoryPressureLevel;
 
 namespace MF.Infrastructure.Core.ResourceManagement;
@@ -15,7 +15,7 @@ namespace MF.Infrastructure.Core.ResourceManagement;
 /// <summary>
 /// 资源管理器 - 系统核心协调组件
 /// </summary>
-public class ResourceManager : BaseService, IResourceCacheService, IResourceMonitorService
+public class ResourceManager : BaseInfrastructure, IResourceCacheService, IResourceMonitorService
 {
     private readonly ICacheService _cacheService;
     private readonly IMemoryMonitor _memoryMonitor;
